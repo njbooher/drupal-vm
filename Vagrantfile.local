@@ -1,0 +1,6 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+config.vm.provider :virtualbox do |v|
+  v.customize ["modifyvm", :id, "--nictype1", "virtio" ]
+  v.customize ["modifyvm", :id, "--nictype2", "virtio" ]
+end
