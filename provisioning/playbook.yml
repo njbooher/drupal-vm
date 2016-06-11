@@ -132,3 +132,33 @@
       args:
         executable: /bin/bash
 
+  post_tasks:
+    - name: Copy Tripal build script
+      copy: src=../scripts/install/tripal.sh dest=/tmp/install_tripal.sh owner="{{ vagrant_user }}" group="{{ vagrant_user }}" mode="0700"
+
+    - set_fact:
+        tripal_install_output_pattern: "{{ vagrant_box | regex_replace('/', '-') }}_php{{ php_version }}_postgres{{ postgresql_version }}"
+
+    - name: Build Tripal
+      shell: /tmp/install_tripal.sh {{ item[1] }} {{ item[0] }} > /tmp/{{ tripal_install_output_pattern }}_tripal-{{ item[0] }}_{{ item[1] }}_stdout.txt 2> /tmp/{{ tripal_install_output_pattern }}_tripal-{{ item[0] }}_{{ item[1] }}_stderr.txt
+      args:
+        executable: /bin/bash
+      become: yes
+      become_user: "{{ vagrant_user }}"
+      environment:
+        WEBROOT: "{{ drupal_core_path | dirname }}/"
+        APACHEUSER: "{{ php_fpm_pool_user }}"
+        DBHOST: "{{ vagrant_hostname }}"
+        DBUSER: "{{ drupal_mysql_user }}"
+        DBPASS: "{{ drupal_mysql_password }}"
+        DRUPALUSER: "{{ drupal_account_name }}"
+      ignore_errors: yes
+      with_nested:
+        - [ '7.x-2.0', '7.x-2.x' ]
+        - [ '--ro', '--go' ]
+
+    - fetch: src=/tmp/{{ tripal_install_output_pattern }}_tripal-{{ item[0] }}_{{ item[1] }}_{{ item[2] }}.txt dest=../logs/ flat=yes
+      with_nested:
+        - [ '7.x-2.0', '7.x-2.x' ]
+        - [ '--ro', '--go' ]
+        - [ 'stdout', 'stderr' ]
