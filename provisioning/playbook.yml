@@ -50,7 +50,6 @@
     - geerlingguy.php-pecl
     - geerlingguy.php-mysql
     - geerlingguy.composer
-    - geerlingguy.drush
 
     # Conditionally-installed roles.
     - { role: geerlingguy.drupal-console, when: 'drupal_major_version > 7 and "drupalconsole" in installed_extras' }
@@ -122,3 +121,12 @@
       include: "{{ item }}"
       with_fileglob:
         - "{{ post_provision_tasks_dir|default(omit) }}"
+
+    - name: Copy Drush build script
+      copy: src=../scripts/install/drush.sh dest=/tmp/install_drush.sh mode="0700"
+
+    - name: Install Drush
+      shell: /tmp/install_drush.sh
+      args:
+        executable: /bin/bash
+
