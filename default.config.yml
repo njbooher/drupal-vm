@@ -70,6 +70,7 @@ drupal_account_pass: admin
 drupal_mysql_user: drupal
 drupal_mysql_password: drupal
 drupal_mysql_database: drupal
+drupal_database_engine: pgsql
 
 # Additional arguments or options to pass to `drush site-install`.
 drupal_site_install_extra_args: []
@@ -173,9 +174,11 @@ installed_extras:
   - drupalconsole
   - mailhog
   # - memcached
+  # - mysql
   # - newrelic
   # - nodejs
   - pimpmylog
+  - pgsql
   # - redis
   # - ruby
   # - selenium
@@ -239,6 +242,26 @@ composer_global_packages:
 pre_provision_scripts: []
 post_provision_scripts: []
   # - "../examples/scripts/configure-solr.sh"
+
+# PostgreSQL
+postgresql_databases:
+  - name: "{{ drupal_mysql_database }}"
+    owner: "{{ drupal_mysql_user }}"
+
+postgresql_users:
+  - name: "{{ drupal_mysql_user }}"
+    pass: "{{ drupal_mysql_password }}"
+    encrypted: no
+
+postgresql_user_privileges:
+  - name: "{{ drupal_mysql_user }}"
+    db: "{{ drupal_mysql_database }}"
+    priv: "ALL"
+    role_attr_flags: "CREATEDB"
+
+postgresql_listen_addresses:
+  - localhost
+  - "{{ vagrant_hostname }}"
 
 # MySQL Configuration.
 mysql_root_password: root

@@ -1,4 +1,7 @@
 ---
+- src: https://github.com/njbooher/postgresql.git
+  version: 6d4c81653360311b0dacdea1138f3a94db750de2
+  name: ANXS.postgresql
 - src: arknoll.selenium
   version: 1.2.0
 - src: franklinkim.newrelic
