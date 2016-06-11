@@ -1,0 +1,32 @@
+---
+vagrant_box: geerlingguy/ubuntu1404
+php_version: "5.5"
+php_packages:
+  - "php5"
+  - "php5-apcu"
+  - "php5-cli"
+  - "php5-common"
+  - "php5-curl"
+  - "php5-dev"
+  - "php5-fpm"
+  - "php5-gd"
+  - "php5-imap"
+  - "libpcre3-dev"
+  - "php5-json"
+  - "php5-ldap"
+  - "php5-mcrypt"
+  - "php-pear"
+  - "php5-pgsql"
+  - "php5-sqlite"
+  - "php5-xmlrpc"
+php_conf_paths:
+  - /etc/php5/apache2
+  - /etc/php5/cli
+php_extension_conf_paths:
+  - /etc/php5/apache2/conf.d
+  - /etc/php5/cli/conf.d
+php_mysql_package: php5-mysql
+postgresql_version: 9.3
+extra_packages:
+  - sqlite
+  - libapache2-mod-php5

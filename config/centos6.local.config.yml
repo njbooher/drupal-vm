@@ -1,0 +1,24 @@
+---
+vagrant_box: geerlingguy/centos6
+php_version: "5.5"
+php_packages:
+  - php55-php
+  - php55-php-cli
+  - php55-php-common
+  - php55-php-devel
+  - php55-php-fpm
+  - php55-php-gd
+  - php55-php-imap
+  - php55-php-ldap
+  - php55-php-mbstring
+  - php55-php-opcache
+  - php55-php-pdo
+  - php55-php-pear
+  - php55-php-pecl-apcu
+  - php55-php-pgsql
+  - php55-php-xml
+  - php55-php-xmlrpc
+php_mysql_package: "php55-php-mysql"
+postgresql_version: 9.3
+postgresql_yum_repository_url: "{{ postgresql_yum_repository_base_url }}/{{ postgresql_version }}/{{ ansible_os_family | lower }}/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-{{ ansible_distribution | lower }}{{ postgresql_version_terse }}-{{ postgresql_version }}-2.noarch.rpm"
+php_opcache_enabled_in_ini: false

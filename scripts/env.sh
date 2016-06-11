@@ -1,0 +1,5 @@
+export TRIPAL_VM_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../ && pwd )"
+export TRIPAL_VM_WORKDIRNAME=RAMDisk
+export TRIPAL_VM_WORKDIRPATH=/Volumes/${TRIPAL_VM_WORKDIRNAME}
+export VAGRANT_DOTFILE_PATH=${TRIPAL_VM_WORKDIRPATH}/.vagrant
+export VAGRANT_HOME=${TRIPAL_VM_WORKDIRPATH}/vagrant.d
