@@ -165,10 +165,10 @@
       ignore_errors: yes
       with_nested:
         - [ '7.x-2.0', '7.x-2.x' ]
-        - [ '--ro', '--go' ]
+        - [ '--ro', '--so', '--go' ]
 
     - fetch: src=/tmp/{{ tripal_install_output_pattern }}_tripal-{{ item[0] }}_{{ item[1] }}_{{ item[2] }}.txt dest=../logs/ flat=yes
       with_nested:
         - [ '7.x-2.0', '7.x-2.x' ]
-        - [ '--ro', '--go' ]
+        - [ '--ro', '--so', '--go' ]
         - [ 'stdout', 'stderr' ]

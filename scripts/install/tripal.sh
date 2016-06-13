@@ -1,6 +1,7 @@
 #!/bin/bash
 
 LOAD_RO=false
+LOAD_SO=false
 LOAD_GO=false
 
 while :
@@ -8,6 +9,10 @@ do
     case "$1" in
         -r | --ro)
         LOAD_RO=true
+        shift
+        ;;
+        -s | --so)
+        LOAD_SO=true
         shift
         ;;
         -g | --go)
@@ -91,6 +96,12 @@ fi;
 if [ "$LOAD_RO" == true ]; then
     wget --no-check-certificate -O ro.obo https://www.drupal.org/files/issues/ro.txt
     drush ev "\$r_obo_id = db_query('SELECT obo_id FROM {tripal_cv_obo} WHERE name = \'Relationship Ontology\'')->fetchObject()->obo_id; db_update('tripal_cv_obo')->fields(array('name' => 'Relationship Ontology', 'path' => 'ro.obo' )) ->condition('obo_id', \$r_obo_id)->execute(); tripal_submit_obo_job(array('obo_id' => \$r_obo_id));"
+    drush trp-run-jobs --username=${DRUPALUSER} --root=${WEBROOT}${SITENAME}
+fi
+
+if [ "$LOAD_SO" == true ]; then
+    wget --no-check-certificate https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/master/so-xp-simple.obo
+    drush ev "\$s_obo_id = db_query('SELECT obo_id FROM {tripal_cv_obo} WHERE name = \'Sequence Ontology\'')->fetchObject()->obo_id; db_update('tripal_cv_obo')->fields(array('name' => 'Sequence Ontology', 'path' => 'so-xp-simple.obo' )) ->condition('obo_id', \$s_obo_id)->execute(); tripal_submit_obo_job(array('obo_id' => \$s_obo_id));"
     drush trp-run-jobs --username=${DRUPALUSER} --root=${WEBROOT}${SITENAME}
 fi
 
