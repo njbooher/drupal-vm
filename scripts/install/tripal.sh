@@ -89,7 +89,8 @@ else
 fi;
 
 if [ "$LOAD_RO" == true ]; then
-    drush ev "\$r_obo_id = db_query('SELECT obo_id FROM {tripal_cv_obo} WHERE name = \'Relationship Ontology\'')->fetchObject()->obo_id; db_update('tripal_cv_obo')->fields(array('name' => 'Relationship Ontology', 'path' => 'http://purl.obolibrary.org/obo/ro.obo' )) ->condition('obo_id', \$r_obo_id)->execute(); tripal_submit_obo_job(array('obo_id' => \$r_obo_id));"
+    wget --no-check-certificate -O ro.obo https://www.drupal.org/files/issues/ro.txt
+    drush ev "\$r_obo_id = db_query('SELECT obo_id FROM {tripal_cv_obo} WHERE name = \'Relationship Ontology\'')->fetchObject()->obo_id; db_update('tripal_cv_obo')->fields(array('name' => 'Relationship Ontology', 'path' => 'ro.obo' )) ->condition('obo_id', \$r_obo_id)->execute(); tripal_submit_obo_job(array('obo_id' => \$r_obo_id));"
     drush trp-run-jobs --username=${DRUPALUSER} --root=${WEBROOT}${SITENAME}
 fi
 
