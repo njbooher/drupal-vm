@@ -3,7 +3,7 @@
 source $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/env.sh
 
 run_test() {
-    vagrant plugin install vagrant-hostsupdater vagrant-vbguest
+    vagrant plugin install vagrant-hostsupdater vagrant-vbguest vagrant-auto_network
     time vagrant up
     vagrant destroy -f
     rm -rf provisioning/roles ${VAGRANT_DOTFILE_PATH} ${VAGRANT_HOME} ${TRIPAL_VM_WORKDIRPATH}/VirtualBox

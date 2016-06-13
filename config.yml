@@ -1,15 +1,17 @@
 ---
-vagrant_hostname: tripal2.dev
-vagrant_machine_name: tripal2
+tripalvm_site_name: tripal2
+vagrant_hostname: "{{ tripalvm_site_name }}.dev"
+vagrant_machine_name: "{{ tripalvm_site_name }}"
+vagrant_ip: 0.0.0.0
 vagrant_synced_folders: []
 vagrant_memory: 4096
-drupal_composer_install_dir: "/var/www/html/tripal2"
+drupal_composer_install_dir: "/var/www/html/{{ tripalvm_site_name }}"
 build_composer_project: false
 install_site: false
 drupal_major_version: 7
 drupal_core_path: "{{ drupal_composer_install_dir }}"
-drupal_site_name: "Tripal2"
-drupal_mysql_database: tripal2
+drupal_site_name: "{{ tripalvm_site_name }}"
+drupal_mysql_database: "{{ tripalvm_site_name }}"
 configure_drush_aliases: false
 installed_extras:
   - pgsql
