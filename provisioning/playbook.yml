@@ -36,6 +36,16 @@
         php_webserver_daemon: nginx
       when: drupalvm_webserver == 'nginx'
 
+    - name: Copy PHP link script
+      copy: src=../scripts/install/php.sh dest=/tmp/install_php.sh mode="0700"
+      when: ansible_os_family == 'RedHat'
+
+    - name: Link PHP
+      shell: /tmp/install_php.sh
+      args:
+        executable: /bin/bash
+      when: ansible_os_family == 'RedHat'
+
   roles:
     # Essential roles.
     - { role: geerlingguy.repo-remi, when: ansible_os_family == 'RedHat' }
