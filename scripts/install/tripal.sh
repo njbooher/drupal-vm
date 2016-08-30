@@ -1,12 +1,7 @@
 #!/bin/bash
 
-BRANCH=$1
-if [ "$BRANCH" == "7.x-2.0" ]; then
-    SITENAME="tripal2";
-else
-    echo "Branch must be 7.x-2.0 or 7.x-2.x";
-    exit 1;
-fi;
+BRANCH="7.x-2.0"
+SITENAME="tripal2"
 
 pushd ${WEBROOT}
 
@@ -59,7 +54,6 @@ drush en -y tripal_blast
 
 drush ev "\$cfp_obo_id = db_query('SELECT obo_id FROM {tripal_cv_obo} WHERE name = \'Chado Feature Properties\'')->fetchObject()->obo_id; tripal_submit_obo_job(array('obo_id' => \$cfp_obo_id));"
 drush trp-run-jobs --username=${DRUPALUSER} --root=${WEBROOT}${SITENAME}
-
 
 popd
 popd
