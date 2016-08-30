@@ -1,34 +1,7 @@
 #!/bin/bash
 
-LOAD_RO=false
-LOAD_SO=false
-LOAD_GO=false
-
-while :
-do
-    case "$1" in
-        -r | --ro)
-        LOAD_RO=true
-        shift
-        ;;
-        -s | --so)
-        LOAD_SO=true
-        shift
-        ;;
-        -g | --go)
-        LOAD_GO=true
-        shift
-        ;;
-        *)
-        break
-        ;;
-    esac
-done
-
 BRANCH=$1
-if [ "$BRANCH" == "7.x-2.x" ]; then
-    SITENAME="tripal2x";
-elif [ "$BRANCH" == "7.x-2.0" ]; then
+if [ "$BRANCH" == "7.x-2.0" ]; then
     SITENAME="tripal2";
 else
     echo "Branch must be 7.x-2.0 or 7.x-2.x";
@@ -46,7 +19,7 @@ sudo -u postgres psql -c "CREATE DATABASE ${SITENAME} OWNER ${DBUSER}"
 sudo mkdir ${SITENAME}
 sudo chown ${USER} ${SITENAME}
 git clone https://github.com/drupal/drupal.git ${SITENAME}
-pushd ${SITENAME} && git checkout tags/7.43 && popd
+pushd ${SITENAME} && git checkout tags/7.44 && popd
 
 pushd ${SITENAME}
 mkdir sites/default/files
@@ -59,13 +32,10 @@ drush dl -y admin_menu environment_indicator
 drush en -y admin_menu_toolbar environment_indicator
 
 # install tripal
-if [ "$BRANCH" == "7.x-2.x" ]; then
-    git clone https://github.com/tripal/tripal.git sites/all/modules/tripal
-    pushd sites/all/modules/tripal && git checkout ${BRANCH} && popd
-else
-    git clone https://github.com/tripal/tripal.git sites/all/modules/tripal
-    pushd sites/all/modules/tripal && git checkout tags/${BRANCH} && popd
-fi;
+
+git clone https://github.com/tripal/tripal.git sites/all/modules/tripal
+pushd sites/all/modules/tripal && git checkout tags/${BRANCH} && popd
+
 drush dl -y ctools views
 drush en -y views_ui
 wget --no-check-certificate https://drupal.org/files/drupal.pgsql-bytea.27.patch
@@ -84,31 +54,12 @@ drush en -y tripal_organism
 drush en -y tripal_analysis
 drush en -y tripal_feature
 
-if [ "$BRANCH" == "7.x-2.x" ]; then
-    # in 2.x installing tripal_cv queues a few jobs, including the Chado Feature Properties load
-    drush trp-run-jobs --username=${DRUPALUSER} --root=${WEBROOT}${SITENAME}
-else
-    # in 2.0 Chado Feature Properties need loaded manually
-    drush ev "\$cfp_obo_id = db_query('SELECT obo_id FROM {tripal_cv_obo} WHERE name = \'Chado Feature Properties\'')->fetchObject()->obo_id; tripal_submit_obo_job(array('obo_id' => \$cfp_obo_id));"
-    drush trp-run-jobs --username=${DRUPALUSER} --root=${WEBROOT}${SITENAME}
-fi;
+git clone https://github.com/tripal/tripal_blast.git sites/all/modules/tripal_blast
+drush en -y tripal_blast
 
-if [ "$LOAD_RO" == true ]; then
-    wget --no-check-certificate -O ro.obo https://www.drupal.org/files/issues/ro.txt
-    drush ev "\$r_obo_id = db_query('SELECT obo_id FROM {tripal_cv_obo} WHERE name = \'Relationship Ontology\'')->fetchObject()->obo_id; db_update('tripal_cv_obo')->fields(array('name' => 'Relationship Ontology', 'path' => 'ro.obo' )) ->condition('obo_id', \$r_obo_id)->execute(); tripal_submit_obo_job(array('obo_id' => \$r_obo_id));"
-    drush trp-run-jobs --username=${DRUPALUSER} --root=${WEBROOT}${SITENAME}
-fi
+drush ev "\$cfp_obo_id = db_query('SELECT obo_id FROM {tripal_cv_obo} WHERE name = \'Chado Feature Properties\'')->fetchObject()->obo_id; tripal_submit_obo_job(array('obo_id' => \$cfp_obo_id));"
+drush trp-run-jobs --username=${DRUPALUSER} --root=${WEBROOT}${SITENAME}
 
-if [ "$LOAD_SO" == true ]; then
-    wget --no-check-certificate https://raw.githubusercontent.com/The-Sequence-Ontology/SO-Ontologies/master/so-xp-simple.obo
-    drush ev "\$s_obo_id = db_query('SELECT obo_id FROM {tripal_cv_obo} WHERE name = \'Sequence Ontology\'')->fetchObject()->obo_id; db_update('tripal_cv_obo')->fields(array('name' => 'Sequence Ontology', 'path' => 'so-xp-simple.obo' )) ->condition('obo_id', \$s_obo_id)->execute(); tripal_submit_obo_job(array('obo_id' => \$s_obo_id));"
-    drush trp-run-jobs --username=${DRUPALUSER} --root=${WEBROOT}${SITENAME}
-fi
-
-if [ "$LOAD_GO" == true ]; then
-    drush ev "\$g_obo_id = db_query('SELECT obo_id FROM {tripal_cv_obo} WHERE name = \'Gene Ontology\'')->fetchObject()->obo_id; db_update('tripal_cv_obo')->fields(array('name' => 'Gene Ontology', 'path' => 'http://www.geneontology.org/ontology/gene_ontology.obo' )) ->condition('obo_id', \$g_obo_id)->execute(); tripal_submit_obo_job(array('obo_id' => \$g_obo_id));"
-    drush trp-run-jobs --username=${DRUPALUSER} --root=${WEBROOT}${SITENAME}
-fi
 
 popd
 popd
